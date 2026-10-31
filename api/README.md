@@ -3,6 +3,8 @@
 Azure Functions (Python 3.12) backend for QuoteLens. It stores quotes and comparisons in
 Cosmos DB and works out which quote is cheapest once known extras are added.
 
+This starter was written with Claude Code. See [AI_DISCLOSURE.md](../AI_DISCLOSURE.md).
+
 ## Run it
 
 Needs Python 3.12, Azure Functions Core Tools 4, and Docker for the local database.
