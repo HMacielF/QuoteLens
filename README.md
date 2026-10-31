@@ -1,4 +1,4 @@
-# QuoteLens frontend (first work product)
+# QuoteLens frontend - Crislen
 
 Static web UI for QuoteLens, a tool that compares contractor estimates side by side.
 Built with plain HTML, CSS and JavaScript so it runs locally with no install.
