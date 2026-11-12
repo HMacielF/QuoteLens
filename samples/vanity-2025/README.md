@@ -39,6 +39,7 @@ fields need a small parser over the OCR text (`content`), for example `(\d+(\.\d
 Numbers in parentheses are the model's confidence; anything under about 0.8 should be
 highlighted on the Review screen.
 
-_AI use: Claude (Anthropic) found these emails, redacted the PDFs, ran the Document
-Intelligence check and drafted this README at Hugo's request. Prompt: "we could add the
-pdf or emails to our QuoteLens as examples so we can make sure the doc can run it."_
+_AI use: Claude Code (Claude Opus 5.5, Anthropic) found these emails, redacted the PDFs, ran the
+Document Intelligence check and drafted this README at Hugo's request. Prompt, lightly edited for
+grammar: "We could add the PDFs or emails to QuoteLens as examples, so we can make sure Document
+Intelligence can read them. Up to you."_
