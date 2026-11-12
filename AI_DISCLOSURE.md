@@ -23,22 +23,22 @@ the specific tool and the prompts used. Each team member adds their own entries.
 
 ### Prompts
 
-Quoted as typed. The homework text is summarized, and teammate email addresses and the
-prototype link are left out.
+Lightly edited for spelling and grammar; the meaning is unchanged. The homework text is
+summarized, and teammate email addresses and the prototype link are left out.
 
-1. "There is QuoteLens inside of my github. this is the assignment let me know wha tu are able
-   to do based on this: [full text of Individual Homework: Project Kickoff & Semester Planning]
-   we will be using azure services btw one more thing we also have a protytpe: [prototype link]"
-2. "Thanks yes start and pls dont include the claude as co-author pls." This approved the plan
+1. "QuoteLens is in my GitHub. Here is the assignment; let me know what you're able to do based
+   on it: [full text of Individual Homework: Project Kickoff & Semester Planning]. We will be
+   using Azure services. One more thing: we also have a prototype: [prototype link]"
+2. "Thanks, yes, start. Please don't include Claude as a co-author." This approved the plan
    Claude Code gave in reply to prompt 1: build the Azure Functions backend and the Cosmos DB
    data model, with extraction mocked.
-3. "Make sure to use the azure for students and yeah we need to add constributors to the project
-   what do u need for that their email?"
+3. "Make sure to use Azure for Students. We also need to add contributors to the project. What
+   do you need for that, their emails?"
 4. "[three teammate email addresses]"
-5. "check in downalods a file called final rpoposal. For the trackign and communication i was
-   thiking we can use github project? or something like that no?"
-6. "I would dicluse in the readme or somewher else maybe a file with ai disclosure idk" This
-   prompt led to this file, which Claude Code also drafted.
+5. "Check Downloads for a file called final proposal. For tracking and communication, I was
+   thinking we could use GitHub Projects or something like that?"
+6. "I would disclose it in the README, or maybe in a separate AI disclosure file." This prompt
+   led to this file, which Claude Code also drafted.
 
 ### Checks and responsibility
 
