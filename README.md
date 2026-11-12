@@ -41,3 +41,5 @@ Labeled form fields, visible keyboard focus, status text next to every color chi
 
 ## Next
 Connect `api.js` to the real Functions, add Entra sign-in, add phone-width testing with classmates.
+
+# Sophie - Data/AI
