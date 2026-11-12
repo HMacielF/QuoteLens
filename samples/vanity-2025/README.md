@@ -40,6 +40,6 @@ Numbers in parentheses are the model's confidence; anything under about 0.8 shou
 highlighted on the Review screen.
 
 _AI use: Claude Code (Claude Opus 5.5, Anthropic) found these emails, redacted the PDFs, ran the
-Document Intelligence check and drafted this README at Hugo's request. Prompt, lightly edited for
-grammar: "We could add the PDFs or emails to QuoteLens as examples, so we can make sure Document
-Intelligence can read them. Up to you."_
+Document Intelligence check and drafted this README at Hugo's request. Prompt, edited for clarity:
+"Add the PDFs and emails to QuoteLens as sample files, so we can confirm Document Intelligence
+can read them."_
