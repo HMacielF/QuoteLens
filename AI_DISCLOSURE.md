@@ -23,22 +23,22 @@ the specific tool and the prompts used. Each team member adds their own entries.
 
 ### Prompts
 
-Lightly edited for spelling and grammar; the meaning is unchanged. The homework text is
-summarized, and teammate email addresses and the prototype link are left out.
+Edited for clarity and grammar; the meaning is unchanged. The homework text is summarized, and
+teammate email addresses and the prototype link are left out.
 
-1. "QuoteLens is in my GitHub. Here is the assignment; let me know what you're able to do based
-   on it: [full text of Individual Homework: Project Kickoff & Semester Planning]. We will be
-   using Azure services. One more thing: we also have a prototype: [prototype link]"
-2. "Thanks, yes, start. Please don't include Claude as a co-author." This approved the plan
-   Claude Code gave in reply to prompt 1: build the Azure Functions backend and the Cosmos DB
-   data model, with extraction mocked.
-3. "Make sure to use Azure for Students. We also need to add contributors to the project. What
-   do you need for that, their emails?"
+1. "QuoteLens is in my GitHub. Here is the assignment: [full text of Individual Homework: Project
+   Kickoff & Semester Planning]. Tell me what you can do based on it. We are using Azure services,
+   and we have a prototype: [prototype link]."
+2. "Go ahead and start. Do not list Claude as a co-author." This approved the plan Claude Code
+   gave in reply to prompt 1: build the Azure Functions backend and the Cosmos DB data model,
+   with extraction mocked.
+3. "Use the Azure for Students subscription, and add my teammates as contributors. Tell me what
+   you need from them."
 4. "[three teammate email addresses]"
-5. "Check Downloads for a file called final proposal. For tracking and communication, I was
-   thinking we could use GitHub Projects or something like that?"
-6. "I would disclose it in the README, or maybe in a separate AI disclosure file." This prompt
-   led to this file, which Claude Code also drafted.
+5. "Read the final proposal in my Downloads folder. For tracking and communication, set up a
+   GitHub Projects board."
+6. "Add an AI use disclosure, either in the README or in a separate file." This prompt led to
+   this file, which Claude Code also drafted.
 
 ### Checks and responsibility
 
