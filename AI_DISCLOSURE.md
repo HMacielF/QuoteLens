@@ -63,19 +63,18 @@ of PR #4 is still pending. Hugo is responsible for this work as submitted.
 
 ### Prompts
 
-Lightly edited for spelling and grammar; the meaning is unchanged.
+Edited for clarity and grammar; the meaning is unchanged.
 
-1. "There should be a QuoteLens project for INST347, either locally or on my GitHub. It's a team
-   project, and I handle the Azure Functions and the database. Can you see what my team has done
-   and what you and I still need to do?"
-2. "Do you have access to my Gmail? There's a chance I have some quotes by email from a few years
-   ago. Could we use those as examples for this project? See what you can find."
-3. "We could add the PDFs or emails to QuoteLens as examples, so we can make sure Document
-   Intelligence can read them. Up to you."
-4. "Go ahead, but be careful. My parts are the NoSQL database, Entra ID and Azure Functions. I
-   don't want to mess with other people's work, so only do what's on our part for now. There
-   should be a GitHub Project board; look at it and update it as needed so everyone can do their
-   part and we can track what's going on."
+1. "Find the QuoteLens project for INST347, locally or on my GitHub. It is a team project, and I
+   am responsible for Azure Functions and the database. Review what the team has done and
+   identify what remains for you and me."
+2. "Check my Gmail for countertop quotes I received in the past, and see whether we can use them
+   as sample data for this project."
+3. "Add the PDFs and emails to QuoteLens as sample files, so we can confirm Document Intelligence
+   can read them."
+4. "Proceed carefully. My areas are the NoSQL database, Entra ID and Azure Functions. Do not
+   change teammates' work; work only on our part. Review the GitHub Project board and update it
+   so each teammate knows their tasks and we can track progress."
 
 ### Checks and responsibility
 
