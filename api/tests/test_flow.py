@@ -134,3 +134,66 @@ def test_confirm_requires_total_and_contractor():
         ConfirmQuoteRequest.model_validate({"contractor": {"name": "ABC"}})
     with pytest.raises(ValueError):
         ConfirmQuoteRequest.model_validate({"totalPrice": 100})
+
+
+def confirm_as(store, user, quote, contractor, total, sqft, **services):
+    data = {"contractor": {"name": contractor}, "totalPrice": total, "squareFootage": sqft, "services": services}
+    service.confirm_quote(store, user, quote.id, ConfirmQuoteRequest.model_validate(data))
+
+
+def test_real_vanity_quotes_flag_exclusions_and_effective_price(store, user):
+    """Values from samples/vanity-2025: same vanity, two shops, neither installs."""
+    comparison, quotes = upload(store, user, 2)
+    none = {"status": "excluded"}
+    confirm_as(store, user, quotes[0], "Architecture Stones", 2779.94, 14.2, installation=none)
+    confirm_as(store, user, quotes[1], "Granite Works", 3929.80, 12, installation=none,
+               sinkCutout={"status": "extra", "amount": 150})
+    results = service.build_comparison(store, user, comparison.id).results
+
+    by_name = {q.contractor: q for q in results.quotes}
+    assert by_name["Architecture Stones"].pricePerSqFt == 195.77
+    assert by_name["Granite Works"].effectivePricePerSqFt == 339.98
+    assert by_name["Granite Works"].excludedServices == ["installation"]
+    texts = [f.text for f in results.flags]
+    assert "None of the quotes include installation. Budget for it separately." in texts
+    assert not any("did not say whether installation" in t for t in texts)
+    assert any("Different square footage" in t for t in texts)
+
+
+def test_one_quote_excluding_a_service_is_named(store, user):
+    comparison, quotes = upload(store, user, 2)
+    confirm_as(store, user, quotes[0], "Shop A", 1000, None, backsplash={"status": "excluded"})
+    confirm_as(store, user, quotes[1], "Shop B", 1200, None, backsplash={"status": "included"})
+    results = service.build_comparison(store, user, comparison.id).results
+    assert any(f.kind == "excluded" and f.text == "Shop A does not include backsplash." for f in results.flags)
+    assert all(q.effectivePricePerSqFt is None for q in results.quotes)
+
+
+def test_cosmos_without_key_uses_managed_identity(monkeypatch):
+    import azure.cosmos
+    import azure.identity
+    from quotelens import store as store_module
+
+    calls = {}
+
+    class FakeClient:
+        def __init__(self, endpoint, credential, **kwargs):
+            calls["credential"] = credential
+
+        def get_database_client(self, name):
+            calls["database"] = name
+            return self
+
+        def get_container_client(self, name):
+            return name
+
+        def create_database_if_not_exists(self, name):
+            raise AssertionError("identity mode must not try to create the database")
+
+    monkeypatch.setattr(azure.cosmos, "CosmosClient", FakeClient)
+    monkeypatch.setattr(azure.identity, "DefaultAzureCredential", lambda: "managed-identity")
+    monkeypatch.setenv("COSMOS_ENDPOINT", "https://example.documents.azure.com:443/")
+    monkeypatch.delenv("COSMOS_KEY", raising=False)
+    built = store_module.store_from_env()
+    assert calls == {"credential": "managed-identity", "database": "quotelens"}
+    assert built._containers == {"users": "users", "comparisons": "comparisons", "quotes": "quotes"}

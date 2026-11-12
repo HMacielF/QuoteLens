@@ -30,15 +30,18 @@ def summarize_quote(quote: Quote) -> QuoteSummary:
     extras = [getattr(quote.services, key) for key in SERVICE_NAMES]
     extras = [item for item in extras if item.status == ServiceStatus.extra]
     known_extras = sum(item.amount or 0 for item in extras)
-    per_sqft = round(quote.totalPrice / quote.squareFootage, 2) if quote.squareFootage else None
+    known_cost = quote.totalPrice + known_extras
+    sqft = quote.squareFootage
     return QuoteSummary(
         quoteId=quote.id,
         contractor=_name(quote),
         statedTotal=quote.totalPrice,
         knownExtras=known_extras,
-        knownCost=quote.totalPrice + known_extras,
+        knownCost=known_cost,
         hasUnpricedExtras=any(item.amount is None for item in extras),
-        pricePerSqFt=per_sqft,
+        pricePerSqFt=round(quote.totalPrice / sqft, 2) if sqft else None,
+        effectivePricePerSqFt=round(known_cost / sqft, 2) if sqft else None,
+        excludedServices=[key for key in SERVICE_NAMES if getattr(quote.services, key).status == ServiceStatus.excluded],
     )
 
 
@@ -55,6 +58,14 @@ def _flags(quotes: list[Quote]) -> list[Flag]:
             if item.status == ServiceStatus.extra:
                 price = money(item.amount) if item.amount is not None else "amount not stated"
                 flags.append(Flag(kind="extra", text=f"{_name(quote)} charges extra for {label} ({price})."))
+
+    for key, label in SERVICE_NAMES.items():
+        excluded = [q for q in quotes if getattr(q.services, key).status == ServiceStatus.excluded]
+        if len(excluded) == len(quotes) and len(quotes) > 1:
+            flags.append(Flag(kind="excluded", text=f"None of the quotes include {label}. Budget for it separately."))
+        elif excluded:
+            verb = "does" if len(excluded) == 1 else "do"
+            flags.append(Flag(kind="excluded", text=f"{_join([_name(q) for q in excluded])} {verb} not include {label}."))
 
     for key, label in SERVICE_NAMES.items():
         unknown = [q for q in quotes if getattr(q.services, key).status == ServiceStatus.not_specified]

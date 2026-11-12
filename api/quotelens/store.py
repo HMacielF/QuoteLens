@@ -49,16 +49,26 @@ class MemoryStore:
 
 
 class CosmosStore:
-    def __init__(self, endpoint: str, key: str, database: str) -> None:
+    """With a key (emulator, tests) it creates the database and containers if missing.
+    With no key it signs in as the Function App's managed identity. Cosmos role-based access
+    can read and write items but cannot create containers, so they must already exist."""
+
+    def __init__(self, endpoint: str, key: str | None, database: str) -> None:
         from azure.cosmos import CosmosClient, PartitionKey
 
         local = "localhost" in endpoint or "127.0.0.1" in endpoint
-        client = CosmosClient(endpoint, credential=key, enable_endpoint_discovery=not local)
-        db = client.create_database_if_not_exists(database)
-        self._containers = {
-            name: db.create_container_if_not_exists(id=name, partition_key=PartitionKey(path="/userId"))
-            for name in CONTAINERS
-        }
+        if key:
+            client = CosmosClient(endpoint, credential=key, enable_endpoint_discovery=not local)
+            db = client.create_database_if_not_exists(database)
+            self._containers = {
+                name: db.create_container_if_not_exists(id=name, partition_key=PartitionKey(path="/userId"))
+                for name in CONTAINERS
+            }
+        else:
+            from azure.identity import DefaultAzureCredential
+
+            db = CosmosClient(endpoint, credential=DefaultAzureCredential()).get_database_client(database)
+            self._containers = {name: db.get_container_client(name) for name in CONTAINERS}
 
     def _get(self, container: str, user_id: str, item_id: str) -> dict | None:
         from azure.cosmos.exceptions import CosmosResourceNotFoundError
@@ -103,7 +113,8 @@ class CosmosStore:
 def store_from_env() -> Store:
     endpoint = os.environ.get("COSMOS_ENDPOINT", "")
     if endpoint:
-        return CosmosStore(endpoint, os.environ["COSMOS_KEY"], os.environ.get("COSMOS_DATABASE", "quotelens"))
+        key = os.environ.get("COSMOS_KEY") or None
+        return CosmosStore(endpoint, key, os.environ.get("COSMOS_DATABASE", "quotelens"))
     if os.environ.get("WEBSITE_INSTANCE_ID"):
         raise RuntimeError("COSMOS_ENDPOINT is required when running in Azure")
     return MemoryStore()

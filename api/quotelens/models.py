@@ -22,6 +22,7 @@ def new_id(prefix: str) -> str:
 class ServiceStatus(str, Enum):
     included = "included"  # part of the stated total
     extra = "extra"  # billed on top of the stated total
+    excluded = "excluded"  # the quote says this work is not part of the job
     not_specified = "not_specified"  # the quote does not say
 
 
@@ -110,11 +111,13 @@ class QuoteSummary(BaseModel):
     knownExtras: float
     knownCost: float
     hasUnpricedExtras: bool
-    pricePerSqFt: float | None
+    pricePerSqFt: float | None  # stated total / square footage
+    effectivePricePerSqFt: float | None = None  # stated total plus known extras / square footage
+    excludedServices: list[str] = Field(default_factory=list)
 
 
 class Flag(BaseModel):
-    kind: str  # extra | missing | info
+    kind: str  # extra | excluded | missing | info
     text: str
 
 
