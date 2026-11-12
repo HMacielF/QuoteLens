@@ -63,20 +63,19 @@ of PR #4 is still pending. Hugo is responsible for this work as submitted.
 
 ### Prompts
 
-Quoted as typed.
+Lightly edited for spelling and grammar; the meaning is unchanged.
 
-1. "There should a local project or somewhere on my github a INST247 project called quotelens.
-   that project is being done with a team ( where I deal with Azure Function and DB) can u see
-   what my team has done and what (we u (ai) and me need to do?)"
-2. "Do u have access to my gmail there is a small change that we have some email quotes from years
-   ago. I was wondeirng if we could use those for this prioject as examples or something else.
-   See what u can find. thanks"
-3. "I mean we could add the pdf or emails to our quote leans as exmaple no so we can make sure the
-   doc can run it. Anyways. up do u."
-4. "Sure i guess? just becareul as i said my goal are NoSQl, EntraID and someting else. i dont wnat
-   to mess up with other peoples work but do what we can on our part so far. proceed with care.
-   there should be a github projects take a look into it too and update as nedeed so people can do
-   their part and we can track what is going on thanks"
+1. "There should be a QuoteLens project for INST347, either locally or on my GitHub. It's a team
+   project, and I handle the Azure Functions and the database. Can you see what my team has done
+   and what you and I still need to do?"
+2. "Do you have access to my Gmail? There's a chance I have some quotes by email from a few years
+   ago. Could we use those as examples for this project? See what you can find."
+3. "We could add the PDFs or emails to QuoteLens as examples, so we can make sure Document
+   Intelligence can read them. Up to you."
+4. "Go ahead, but be careful. My parts are the NoSQL database, Entra ID and Azure Functions. I
+   don't want to mess with other people's work, so only do what's on our part for now. There
+   should be a GitHub Project board; look at it and update it as needed so everyone can do their
+   part and we can track what's going on."
 
 ### Checks and responsibility
 
