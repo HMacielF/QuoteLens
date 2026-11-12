@@ -12,10 +12,12 @@ from pydantic import BaseModel, ValidationError
 from quotelens import service
 from quotelens.models import ConfirmQuoteRequest, CreateComparisonRequest
 from quotelens.service import ApiError
+from quotelens.files import FileStore, files_from_env
 from quotelens.store import Store, store_from_env
 
 app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
 _store: Store | None = None
+_files: FileStore | None = None
 
 
 def store() -> Store:
@@ -23,6 +25,13 @@ def store() -> Store:
     if _store is None:
         _store = store_from_env()
     return _store
+
+
+def files() -> FileStore:
+    global _files
+    if _files is None:
+        _files = files_from_env()
+    return _files
 
 
 def user_id(req: func.HttpRequest) -> str:
@@ -94,7 +103,7 @@ def get_comparison(req: func.HttpRequest, user: str) -> func.HttpResponse:
 def extract_quote(req: func.HttpRequest, user: str) -> func.HttpResponse:
     raw_name = req.headers.get("x-file-name", "quote.pdf")
     file_name = re.sub(r"[^\w. -]", "_", raw_name)[:120]
-    quote = service.add_quote(store(), user, req.route_params["id"], file_name, req.get_body())
+    quote = service.add_quote(store(), files(), user, req.route_params["id"], file_name, req.get_body())
     return respond(quote, 201)
 
 
@@ -121,3 +130,9 @@ def list_quotes(req: func.HttpRequest, user: str) -> func.HttpResponse:
 def confirm_quote(req: func.HttpRequest, user: str) -> func.HttpResponse:
     reviewed = ConfirmQuoteRequest.model_validate(req.get_json())
     return respond(service.confirm_quote(store(), user, req.route_params["id"], reviewed))
+
+
+@app.route(route="quotes/{id}/pdf", methods=["GET"])
+@api
+def quote_pdf(req: func.HttpRequest, user: str) -> func.HttpResponse:
+    return respond(service.get_pdf_link(store(), files(), user, req.route_params["id"]))
