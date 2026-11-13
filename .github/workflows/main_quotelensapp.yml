@@ -1,10 +1,14 @@
-# Deploys the static frontend (index.html, css/, js/, assets/) to the quotelensapp Web App
-# whenever those files change on main. The backend in api/ deploys separately to the
-# quotelens-api-hmf Function App and is never copied to the website.
+# Deploys the frontend to the quotelensapp Web App whenever frontend files change on main.
+# The backend in api/ deploys separately to the quotelens-api-hmf Function App and is never
+# copied to the website.
 #
-# Started from the workflow Azure's Deployment Center generated. That version ran npm, but the
-# frontend has no package.json, so the first run failed. Azure sign-in uses OpenID Connect
-# with the secrets Deployment Center created; no passwords are stored.
+# Two layouts are supported, so the move to a Node frontend needs no workflow change:
+#   - frontend/package.json exists: run npm in ./frontend and deploy its build output
+#     (frontend/dist for Vite, or frontend/build).
+#   - otherwise: deploy the static index.html, css/, js/ and assets/ from the repo root.
+#
+# Started from the workflow Azure's Deployment Center generated. Azure sign-in uses OpenID
+# Connect with the secrets Deployment Center created; no passwords are stored.
 
 name: Deploy frontend to quotelensapp
 
@@ -13,6 +17,7 @@ on:
     branches:
       - main
     paths:
+      - 'frontend/**'
       - 'index.html'
       - 'css/**'
       - 'js/**'
@@ -35,13 +40,34 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Set up Node.js
+        if: hashFiles('frontend/package.json') != ''
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.x'
+
+      - name: npm install, build, and test
+        if: hashFiles('frontend/package.json') != ''
+        working-directory: ./frontend
+        run: |
+          if [ -f package-lock.json ]; then npm ci; else npm install; fi
+          npm run build --if-present
+          npm run test --if-present
+
       - name: Collect the website files
         run: |
           mkdir site
-          cp index.html site/
-          for dir in css js assets; do
-            if [ -d "$dir" ]; then cp -r "$dir" site/; fi
-          done
+          if [ -f frontend/package.json ]; then
+            if [ -d frontend/dist ]; then cp -r frontend/dist/. site/
+            elif [ -d frontend/build ]; then cp -r frontend/build/. site/
+            else echo "npm build produced no dist/ or build/ folder in frontend/"; exit 1
+            fi
+          else
+            cp index.html site/
+            for dir in css js assets; do
+              if [ -d "$dir" ]; then cp -r "$dir" site/; fi
+            done
+          fi
           echo "Files to deploy:"
           find site -type f | sort
 
@@ -60,8 +86,9 @@ jobs:
           slot-name: 'Production'
           package: site
           # The Web App runs Node 22 on Linux. pm2 comes with that image and serves the
-          # folder as a static website, so no Node server code is needed.
-          startup-command: 'pm2 serve /home/site/wwwroot --no-daemon'
+          # folder as a static website. --spa sends unknown paths to index.html, which a
+          # single-page app's router needs.
+          startup-command: 'pm2 serve /home/site/wwwroot --no-daemon --spa'
 
       - name: Check the site responds
         run: |
