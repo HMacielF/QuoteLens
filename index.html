@@ -74,7 +74,7 @@
         const config = await (await fetch("/config")).json();
         API_BASE = (config.apiBase || "").replace(/\/+$/, "");
       } catch (e) {
-        API_BASE = "quotelensapp-dubedsh9d3dafzcg.centralus-01.azurewebsites.net/api";
+        API_BASE = " ";
       }
       $("apiShown").textContent = API_BASE || "(not set)";
       if (!API_BASE) {
