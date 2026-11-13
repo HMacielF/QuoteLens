@@ -4,7 +4,8 @@
 #
 # Two layouts are supported, so the move to a Node frontend needs no workflow change:
 #   - frontend/package.json exists: run npm in ./frontend and deploy its build output
-#     (frontend/dist for Vite, or frontend/build).
+#     (frontend/dist for Vite, or frontend/build). With no build output, frontend/ is
+#     deployed whole as a Node server app and started with npm start.
 #   - otherwise: deploy the static index.html, css/, js/ and assets/ from the repo root.
 #
 # Started from the workflow Azure's Deployment Center generated. Azure sign-in uses OpenID
@@ -55,12 +56,19 @@ jobs:
           npm run test --if-present
 
       - name: Collect the website files
+        id: collect
         run: |
+          # Static files are served by pm2; a Node server app in frontend/ runs with npm start.
+          startup="pm2 serve /home/site/wwwroot --no-daemon --spa"
           mkdir site
           if [ -f frontend/package.json ]; then
             if [ -d frontend/dist ]; then cp -r frontend/dist/. site/
             elif [ -d frontend/build ]; then cp -r frontend/build/. site/
-            else echo "npm build produced no dist/ or build/ folder in frontend/"; exit 1
+            else
+              # No build output: treat frontend/ as a Node server app and deploy it whole.
+              cp -r frontend/. site/
+              rm -rf site/node_modules
+              startup="npm start"
             fi
           else
             cp index.html site/
@@ -68,6 +76,8 @@ jobs:
               if [ -d "$dir" ]; then cp -r "$dir" site/; fi
             done
           fi
+          echo "startup=$startup" >> "$GITHUB_OUTPUT"
+          echo "Startup command: $startup"
           echo "Files to deploy:"
           find site -type f | sort
 
@@ -85,10 +95,10 @@ jobs:
           app-name: 'quotelensapp'
           slot-name: 'Production'
           package: site
-          # The Web App runs Node 22 on Linux. pm2 comes with that image and serves the
-          # folder as a static website. --spa sends unknown paths to index.html, which a
-          # single-page app's router needs.
-          startup-command: 'pm2 serve /home/site/wwwroot --no-daemon --spa'
+          # The Web App runs Node 22 on Linux. For static files, pm2 (included in that image)
+          # serves the folder, and --spa sends unknown paths to index.html for a single-page
+          # app's router. A Node server app in frontend/ runs with npm start instead.
+          startup-command: ${{ steps.collect.outputs.startup }}
 
       - name: Check the site responds
         run: |
