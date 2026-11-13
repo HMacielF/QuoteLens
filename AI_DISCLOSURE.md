@@ -46,6 +46,41 @@ The code passed 23 automated tests, including runs against the local Cosmos DB e
 the full flow ran on a local Functions host. It has not been deployed to Azure. Teammate review
 of PR #4 is still pending. Hugo is responsible for this work as submitted.
 
+## Hugo Maciel Fraga: sample quotes, excluded status, Cosmos identity, board (Nov 12)
+
+- **Tool:** Claude Code, using the Claude Opus 5.5 model (Anthropic)
+- **Date:** November 12, 2026
+- **Used for:** PR #5 (sample quotes), the backend changes stacked on PR #4, and the task board
+
+### What Claude Code produced
+
+- Found Hugo's January 2025 vanity quotes in his Gmail, redacted his name, phone and email,
+  printed the two email quotes to PDF, and ran Azure Document Intelligence on them (PR #5)
+- Resolved PR #4's `.gitignore` merge conflict
+- The `excluded` service status, effective price per sq ft, exclusion flags, Cosmos sign-in with
+  the Function App's managed identity, the tests for them, and the README updates
+- The status review of every teammate's branch and the task board updates
+
+### Prompts
+
+Edited for clarity and grammar; the meaning is unchanged.
+
+1. "Find the QuoteLens project for INST347, locally or on my GitHub. It is a team project, and I
+   am responsible for Azure Functions and the database. Review what the team has done and
+   identify what remains for you and me."
+2. "Check my Gmail for countertop quotes I received in the past, and see whether we can use them
+   as sample data for this project."
+3. "Add the PDFs and emails to QuoteLens as sample files, so we can confirm Document Intelligence
+   can read them."
+4. "Proceed carefully. My areas are the NoSQL database, Entra ID and Azure Functions. Do not
+   change teammates' work; work only on our part. Review the GitHub Project board and update it
+   so each teammate knows their tasks and we can track progress."
+
+### Checks and responsibility
+
+17 automated tests pass locally. Teammates' branches and Azure resources were read but not
+changed. Hugo is responsible for this work as submitted.
+
 ## Other team members
 
 Add your own entries here, with the tool and prompts.

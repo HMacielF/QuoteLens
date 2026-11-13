@@ -1,7 +1,8 @@
 # QuoteLens API - Hugo
 
 Azure Functions (Python 3.12) backend for QuoteLens. It stores quotes and comparisons in
-Cosmos DB and works out which quote is cheapest once known extras are added.
+Cosmos DB and works out which quote is cheapest once known extras are added. Each quote gets a price per sq ft
+from its stated total and an effective price per sq ft that includes known extras.
 
 This starter was written with Claude Code. See [AI_DISCLOSURE.md](../AI_DISCLOSURE.md).
 
@@ -52,7 +53,8 @@ Errors look like `{"error": "message"}`, and 422 responses add `details` per fie
 Containers `users`, `comparisons` and `quotes`, all partitioned on `/userId`.
 
 This extends the Cosmos slide in two ways the prototype needs. `services` is an object instead of
-a flat list, so each service can be `included`, `extra` or `not_specified` with an amount. Quotes
+a flat list, so each service can be `included`, `extra` (billed on top), `excluded` (the quote says
+it is not part of the job) or `not_specified`, with an amount. Quotes
 also gain material, color, edge, date, notes and a `status` for the Processing screen.
 `users` is created but not written yet; that comes with Entra sign-in.
 
@@ -63,9 +65,10 @@ also gain material, color, edge, date, notes and a `status` for the Processing s
   `quotelens/models.py`. Fields it can't find stay empty, and services stay `not_specified`.
 - **Crislen (frontend):** point `js/api.js` at these routes. Until Entra is in, send
   `x-user-id` locally. Port 5173 is already allowed for CORS.
-- **Kristi (infrastructure):** the Function App needs Python 3.12, `COSMOS_ENDPOINT`, `COSMOS_KEY`,
+- **Kristi (infrastructure):** the Function App needs Python 3.12 on Linux, `COSMOS_ENDPOINT`,
   `COSMOS_DATABASE`, and App Service authentication on with Entra External ID.
-  Never set `ALLOW_DEV_USER` in Azure.
+  In Azure, leave `COSMOS_KEY` unset: the app signs in to Cosmos with its managed identity, which
+  needs the "Cosmos DB Built-in Data Contributor" role. Never set `ALLOW_DEV_USER` in Azure.
 
 ## Mocked or not done yet
 
