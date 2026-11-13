@@ -60,6 +60,9 @@ of PR #4 is still pending. Hugo is responsible for this work as submitted.
 - The `excluded` service status, effective price per sq ft, exclusion flags, Cosmos sign-in with
   the Function App's managed identity, the tests for them, and the README updates
 - The status review of every teammate's branch and the task board updates
+- Saving original PDFs to Blob Storage and the owner-only, short-lived link to reopen them
+- Deployed the backend to Azure with a setup script Hugo ran, and started the Entra External ID
+  tenant setup in the Azure portal
 
 ### Prompts
 
@@ -75,10 +78,12 @@ Edited for clarity and grammar; the meaning is unchanged.
 4. "Proceed carefully. My areas are the NoSQL database, Entra ID and Azure Functions. Do not
    change teammates' work; work only on our part. Review the GitHub Project board and update it
    so each teammate knows their tasks and we can track progress."
+5. "Open the Azure portal and set up Entra External ID with me. Also proceed with saving the
+   original PDFs to Blob Storage."
 
 ### Checks and responsibility
 
-17 automated tests pass locally. Teammates' branches and Azure resources were read but not
+21 automated tests pass locally. Teammates' branches and Azure resources were read but not
 changed. Hugo is responsible for this work as submitted.
 
 ## Other team members

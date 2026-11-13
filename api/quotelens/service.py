@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from .comparison import build_results
 from .extraction import extract_quote
+from .files import LINK_MINUTES, FileStore, pdf_path
 from .models import (
     MAX_QUOTES_PER_COMPARISON,
     MIN_QUOTES_PER_COMPARISON,
@@ -56,7 +57,7 @@ def get_comparison(store: Store, user_id: str, comparison_id: str) -> dict:
     return {**comparison.model_dump(mode="json"), "quotes": [q.model_dump(mode="json") for q in quotes]}
 
 
-def add_quote(store: Store, user_id: str, comparison_id: str, file_name: str, pdf: bytes) -> Quote:
+def add_quote(store: Store, files: FileStore, user_id: str, comparison_id: str, file_name: str, pdf: bytes) -> Quote:
     comparison = _require_comparison(store, user_id, comparison_id)
     if not pdf.startswith(b"%PDF-"):
         raise ApiError(415, "QuoteLens reads PDF estimates only")
@@ -67,6 +68,8 @@ def add_quote(store: Store, user_id: str, comparison_id: str, file_name: str, pd
         raise ApiError(409, f"A comparison can hold up to {MAX_QUOTES_PER_COMPARISON} quotes")
 
     quote = Quote(userId=user_id, comparisonId=comparison_id, fileName=file_name)
+    quote.pdfBlobPath = pdf_path(user_id, comparison_id, quote.id)
+    files.save(quote.pdfBlobPath, pdf)  # before the record, so a saved quote always has its file
     store.save_quote(quote)
     comparison.quoteIds.append(quote.id)
     _mark_stale(comparison)
@@ -81,6 +84,13 @@ def add_quote(store: Store, user_id: str, comparison_id: str, file_name: str, pd
     quote = quote.model_copy(update={**dict(extracted), "status": QuoteStatus.details_ready, "extractedAt": now_iso()})
     store.save_quote(quote)
     return quote
+
+
+def get_pdf_link(store: Store, files: FileStore, user_id: str, quote_id: str) -> dict:
+    quote = _require_quote(store, user_id, quote_id)
+    if not quote.pdfBlobPath:
+        raise ApiError(404, "The original PDF for this quote was not saved")
+    return {"url": files.link(quote.pdfBlobPath, quote.fileName), "expiresInMinutes": LINK_MINUTES}
 
 
 def get_status(store: Store, user_id: str, comparison_id: str) -> dict:

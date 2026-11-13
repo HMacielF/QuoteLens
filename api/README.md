@@ -45,6 +45,7 @@ read is limited to that user's Cosmos partition. Another user's id returns 404.
 | POST | `/comparisons/{id}/build` | Comparison Results | Builds results once 2+ quotes are all confirmed |
 | GET | `/quotes` | My Quotes | Every quote the user has |
 | PUT | `/quotes/{id}/confirm` | Review | Saves the reviewed fields. Editing a quote clears old results |
+| GET | `/quotes/{id}/pdf` | Review, Comparison Results | `{"url", "expiresInMinutes"}`: a read-only link to the original PDF, valid 10 minutes. Open it in a new tab |
 
 Errors look like `{"error": "message"}`, and 422 responses add `details` per field.
 
@@ -69,12 +70,14 @@ also gain material, color, edge, date, notes and a `status` for the Processing s
   `COSMOS_DATABASE`, and App Service authentication on with Entra External ID.
   In Azure, leave `COSMOS_KEY` unset: the app signs in to Cosmos with its managed identity, which
   needs the "Cosmos DB Built-in Data Contributor" role. Never set `ALLOW_DEV_USER` in Azure.
+  Original PDFs go to the private `quote-files` container: set `QUOTE_FILES_ACCOUNT_URL`, and give
+  the identity Storage Blob Data Contributor on that container plus Storage Blob Delegator on the
+  account, so it can sign the short-lived read links.
 
 ## Mocked or not done yet
 
 - Extraction returns the prototype's three sample quotes and never reads the PDF. These quotes
   have `extractionSource: "mock"`.
-- PDFs are not saved to Blob Storage yet, so `pdfBlobPath` is empty.
 - Extraction runs inside the upload request, so `status` only ever shows the end state. It will
   matter once extraction runs in the background.
 - Entra sign-in is written but untested until it is deployed. Locally, `x-user-id` stands in.

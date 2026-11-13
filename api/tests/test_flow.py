@@ -4,10 +4,12 @@ import pytest
 
 from quotelens import service
 from quotelens.extraction import SAMPLES
+from quotelens.files import MemoryFileStore
 from quotelens.models import ConfirmQuoteRequest, ExtractedQuote, QuoteStatus
 from quotelens.service import ApiError
 
 PDF = b"%PDF-1.7 test"
+FILES = MemoryFileStore()
 
 
 @pytest.fixture
@@ -17,7 +19,7 @@ def user():
 
 def upload(store, user, count):
     comparison = service.create_comparison(store, user, "Kitchen Renovation")
-    quotes = [service.add_quote(store, user, comparison.id, f"quote{i}.pdf", PDF) for i in range(count)]
+    quotes = [service.add_quote(store, FILES, user, comparison.id, f"quote{i}.pdf", PDF) for i in range(count)]
     return comparison, quotes
 
 
@@ -76,14 +78,14 @@ def test_needs_two_quotes(store, user):
 def test_sixth_quote_is_rejected(store, user):
     comparison, _ = upload(store, user, 5)
     with pytest.raises(ApiError) as error:
-        service.add_quote(store, user, comparison.id, "six.pdf", PDF)
+        service.add_quote(store, FILES, user, comparison.id, "six.pdf", PDF)
     assert error.value.status == 409
 
 
 def test_non_pdf_is_rejected(store, user):
     comparison = service.create_comparison(store, user, "Kitchen")
     with pytest.raises(ApiError) as error:
-        service.add_quote(store, user, comparison.id, "notes.txt", b"hello")
+        service.add_quote(store, FILES, user, comparison.id, "notes.txt", b"hello")
     assert error.value.status == 415
 
 
@@ -108,7 +110,7 @@ def test_users_cannot_see_each_others_data(store, user):
         lambda: service.get_comparison(store, other, comparison.id),
         lambda: service.get_status(store, other, comparison.id),
         lambda: service.build_comparison(store, other, comparison.id),
-        lambda: service.add_quote(store, other, comparison.id, "x.pdf", PDF),
+        lambda: service.add_quote(store, FILES, other, comparison.id, "x.pdf", PDF),
         lambda: service.confirm_quote(store, other, quotes[0].id, ConfirmQuoteRequest.model_validate(SAMPLES[0])),
     ):
         with pytest.raises(ApiError) as error:
@@ -197,3 +199,54 @@ def test_cosmos_without_key_uses_managed_identity(monkeypatch):
     built = store_module.store_from_env()
     assert calls == {"credential": "managed-identity", "database": "quotelens"}
     assert built._containers == {"users": "users", "comparisons": "comparisons", "quotes": "quotes"}
+
+
+def test_upload_saves_the_original_pdf_under_its_owner(store, user):
+    files = MemoryFileStore()
+    comparison = service.create_comparison(store, user, "Vanity")
+    quote = service.add_quote(store, files, user, comparison.id, "estimate.pdf", PDF)
+    assert quote.pdfBlobPath == f"{user}/{comparison.id}/{quote.id}.pdf"
+    assert files.files[quote.pdfBlobPath] == PDF
+    assert store.get_quote(user, quote.id).pdfBlobPath == quote.pdfBlobPath
+
+
+def test_only_the_owner_gets_a_pdf_link(store, user):
+    files = MemoryFileStore()
+    comparison = service.create_comparison(store, user, "Vanity")
+    quote = service.add_quote(store, files, user, comparison.id, "estimate.pdf", PDF)
+    link = service.get_pdf_link(store, files, user, quote.id)
+    assert link == {"url": f"memory://{quote.pdfBlobPath}", "expiresInMinutes": 10}
+    with pytest.raises(ApiError) as error:
+        service.get_pdf_link(store, files, f"user_{uuid4().hex[:8]}", quote.id)
+    assert error.value.status == 404
+
+
+def test_rejected_upload_saves_no_file(store, user):
+    files = MemoryFileStore()
+    comparison = service.create_comparison(store, user, "Vanity")
+    with pytest.raises(ApiError):
+        service.add_quote(store, files, user, comparison.id, "notes.txt", b"hello")
+    assert files.files == {}
+
+
+def test_pdf_link_is_read_only_and_short_lived():
+    from datetime import datetime, timezone
+    from urllib.parse import parse_qs, urlparse
+
+    from azure.storage.blob import UserDelegationKey
+
+    from quotelens.files import sas_url
+
+    key = UserDelegationKey()
+    key.signed_oid, key.signed_tid = "00000000-0000-0000-0000-000000000001", "00000000-0000-0000-0000-000000000002"
+    key.signed_start, key.signed_expiry = "2026-11-12T00:00:00Z", "2026-11-13T00:00:00Z"
+    key.signed_service, key.signed_version, key.value = "b", "2025-01-05", "c2VjcmV0LWtleS1mb3ItdGVzdHM="
+    now = datetime(2026, 11, 12, 15, 0, tzinfo=timezone.utc)
+    url = sas_url("https://acct.blob.core.windows.net/quote-files", "acct", "quote-files",
+                  "user1/comp_1/quote_1.pdf", key, 'Old "Town".pdf', now)
+    parts = urlparse(url)
+    query = parse_qs(parts.query)
+    assert parts.path == "/quote-files/user1/comp_1/quote_1.pdf"
+    assert query["sp"] == ["r"]
+    assert query["se"] == ["2026-11-12T15:10:00Z"]
+    assert query["rscd"] == ['inline; filename="Old _Town_.pdf"']
