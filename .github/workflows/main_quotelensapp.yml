@@ -1,66 +1,113 @@
-# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
-# More GitHub Actions for Azure: https://github.com/Azure/actions
+# Deploys the frontend to the quotelensapp Web App whenever frontend files change on main.
+# The backend in api/ deploys separately to the quotelens-api-hmf Function App and is never
+# copied to the website.
+#
+# Two layouts are supported, so the move to a Node frontend needs no workflow change:
+#   - frontend/package.json exists: run npm in ./frontend and deploy its build output
+#     (frontend/dist for Vite, or frontend/build). With no build output, frontend/ is
+#     deployed whole as a Node server app and started with npm start.
+#   - otherwise: deploy the static index.html, css/, js/ and assets/ from the repo root.
+#
+# Started from the workflow Azure's Deployment Center generated. Azure sign-in uses OpenID
+# Connect with the secrets Deployment Center created; no passwords are stored.
 
-name: Build and deploy Node.js app to Azure Web App - quotelensapp
+name: Deploy frontend to quotelensapp
 
 on:
   push:
     branches:
-      - 'main'
+      - main
+    paths:
+      - 'frontend/**'
+      - 'index.html'
+      - 'css/**'
+      - 'js/**'
+      - 'assets/**'
+      - '.github/workflows/main_quotelensapp.yml'
   workflow_dispatch:
 
+# A newer push to main cancels a deploy that has not finished yet.
+concurrency:
+  group: deploy-quotelensapp
+  cancel-in-progress: true
+
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
     permissions:
-      contents: read #This is required for actions/checkout
+      id-token: write # Needed to sign in to Azure with OpenID Connect
+      contents: read  # Needed to check out the repository
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Node.js version
-        uses: actions/setup-node@v3
+      - name: Set up Node.js
+        if: hashFiles('frontend/package.json') != ''
+        uses: actions/setup-node@v4
         with:
           node-version: '22.x'
 
       - name: npm install, build, and test
+        if: hashFiles('frontend/package.json') != ''
         working-directory: ./frontend
         run: |
-          npm install
+          if [ -f package-lock.json ]; then npm ci; else npm install; fi
           npm run build --if-present
           npm run test --if-present
 
-      - name: Upload artifact for deployment job
-        uses: actions/upload-artifact@v4
-        with:
-          name: node-app
-          path: ./frontend
+      - name: Collect the website files
+        id: collect
+        run: |
+          # Static files are served by pm2; a Node server app in frontend/ runs with npm start.
+          startup="pm2 serve /home/site/wwwroot --no-daemon --spa"
+          mkdir site
+          if [ -f frontend/package.json ]; then
+            if [ -d frontend/dist ]; then cp -r frontend/dist/. site/
+            elif [ -d frontend/build ]; then cp -r frontend/build/. site/
+            else
+              # No build output: treat frontend/ as a Node server app and deploy it whole.
+              cp -r frontend/. site/
+              rm -rf site/node_modules
+              startup="npm start"
+            fi
+          else
+            cp index.html site/
+            for dir in css js assets; do
+              if [ -d "$dir" ]; then cp -r "$dir" site/; fi
+            done
+          fi
+          echo "startup=$startup" >> "$GITHUB_OUTPUT"
+          echo "Startup command: $startup"
+          echo "Files to deploy:"
+          find site -type f | sort
 
-  deploy:
-    runs-on: ubuntu-latest
-    needs: build
-    permissions:
-      id-token: write #This is required for requesting the JWT
-      contents: read #This is required for actions/checkout
-
-    steps:
-      - name: Download artifact from build job
-        uses: actions/download-artifact@v4
-        with:
-          name: node-app
-      
-      - name: Login to Azure
+      - name: Sign in to Azure
         uses: azure/login@v2
         with:
           client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_61939F45DB7A413DBF7F1A57C1F8A4F1 }}
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_F2211AC6EF2F452FA64FCDAD998C1BCD }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_7663082315074498955F7C5730E21EC4 }}
 
-      - name: 'Deploy to Azure Web App'
+      - name: Deploy to the quotelensapp Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'quotelensapp'
           slot-name: 'Production'
-          package: .
-          
+          package: site
+          # The Web App runs Node 22 on Linux. For static files, pm2 (included in that image)
+          # serves the folder, and --spa sends unknown paths to index.html for a single-page
+          # app's router. A Node server app in frontend/ runs with npm start instead.
+          startup-command: ${{ steps.collect.outputs.startup }}
+
+      - name: Check the site responds
+        run: |
+          url="${{ steps.deploy-to-webapp.outputs.webapp-url }}"
+          for attempt in 1 2 3 4 5 6; do
+            code=$(curl -s -o /dev/null -w "%{http_code}" "$url/")
+            echo "Attempt $attempt: $url returned $code"
+            if [ "$code" = "200" ]; then exit 0; fi
+            sleep 20
+          done
+          echo "The site did not return 200 after deploying."
+          exit 1

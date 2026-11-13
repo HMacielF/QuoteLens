@@ -86,6 +86,33 @@ Edited for clarity and grammar; the meaning is unchanged.
 21 automated tests pass locally. Teammates' branches and Azure resources were read but not
 changed. Hugo is responsible for this work as submitted.
 
+## Hugo Maciel Fraga: frontend deploy workflow (Nov 13)
+
+- **Tool:** Claude Code, using the Claude Opus 5.5 model (Anthropic)
+- **Date:** November 13, 2026
+- **Used for:** the GitHub Actions workflow that deploys the frontend to the `quotelensapp` Web App
+
+### What Claude Code produced
+
+- Diagnosed the first deploy run's failure (the Deployment Center template runs npm, and the
+  frontend has no `package.json`)
+- Rewrote `.github/workflows/main_quotelensapp.yml` to deploy only the website files as a
+  static site, run only when those files change, and check the site responds after deploying
+- Reviewed the resources teammates added to `quotelens-rg` on November 13 (read only)
+
+### Prompts
+
+Edited for clarity and grammar; the meaning is unchanged.
+
+1. "[Photo of the quotelens-rg resource list in the Azure portal]"
+2. "[The workflow file Azure generated] Create a workflow that deploys from main. We also need to
+   start merging the pull requests."
+
+### Checks and responsibility
+
+The workflow was checked against the Web App's settings (Linux, Node 22) and the first run's
+log. Hugo is responsible for this work as submitted.
+
 ## Other team members
 
 Add your own entries here, with the tool and prompts.
