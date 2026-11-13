@@ -1,13 +1,14 @@
 {
-  "name": "inst347-counter-frontend",
+  "name": "inst347-counter-api",
   "version": "1.0.0",
-  "description": "INST347 starter - website (served by App Service)",
-  "main": "server.js",
+  "description": "INST347 starter - Azure Functions API",
+  "main": "src/functions/*.js",
   "private": true,
   "scripts": {
-    "start": "node server.js"
+    "start": "func start"
   },
-  "engines": {
-    "node": ">=22"
+  "dependencies": {
+    "@azure/cosmos": "^4.10.1",
+    "@azure/functions": "^4.16.5"
   }
 }
