@@ -75,9 +75,9 @@ imports it. Other tools may need the files opened or pasted.
 | Teammate | Area | Open issues (2026-11-20) |
 |---|---|---|
 | Hugo Maciel Fraga (`HMacielF`) | Backend, database, sign-in, team lead | #7, #10, #32, #33, #37, #38 |
-| Kristi Sunwar (`ksunwar`) | Azure infrastructure and DevOps | #8, #11, #12, #13, #25, #26, #27, #39, #47 |
-| Adela Wallis (`awallis1`) | Extraction with Document Intelligence, data | #14, #19, #20, #22, #35, #40, #45 |
-| Crislen Flores (`cff08`) | Frontend | #9, #18, #23, #34, #36, #41, #42, #43, #44, #46 |
+| Kristi Sunwar (`ksunwar`) | Azure infrastructure and DevOps | #11, #13, #25, #26, #27, #39 |
+| Adela Wallis (`awallis1`) | Extraction with Document Intelligence, data | #14, #19, #20, #35, #40, #45 |
+| Crislen Flores (`cff08`) | Frontend | #34, #36, #41, #42, #43, #44, #46 |
 
 ## 7. Questions to settle as a team
 
@@ -85,4 +85,3 @@ imports it. Other tools may need the files opened or pasted.
 - Extraction: prebuilt-invoice plus a text parser for square footage, or another model (#14)?
 - Will the demo use demo mode if live sign-in is not ready by Nov 29?
 - Keep or delete the legacy Team Counter files at the repository root?
-- Close or reword issues #9 and #18 now that the React app replaced root `css/` and `js/`?

@@ -82,7 +82,7 @@ subscription.
 | `samples/vanity-2025/` | Four real, redacted quotes for testing extraction |
 | `.github/workflows/main_quotelensapp.yml` | Builds `frontend/` and deploys it on pushes to `main` |
 | `main.bicep` | **Stale.** Does not match what is deployed (issue #11) |
-| Root `index.html`, `server.js`, `db.js`, `getCount.js`, `addOne.js`, `version.js`, `package.json`, `host.json`, `local.settings.example.json` | **Legacy** "Team Counter" lab code from INST347 class labs. Not part of QuoteLens. The Function App that ran it was deleted on 2026-11-20 |
+| Root `index.html`, `server.js`, `db.js`, `getCount.js`, `addOne.js`, `version.js`, `package.json`, `host.json` | **Legacy** "Team Counter" lab code from INST347 class labs. Not part of QuoteLens. The Function App that ran it was deleted on 2026-11-20 |
 | Root `styles.css` (prototype CSS) and `style.css` (empty) | **Legacy.** Nothing loads them |
 
 ## Setup, run and test
