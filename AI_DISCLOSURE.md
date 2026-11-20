@@ -113,6 +113,44 @@ Edited for clarity and grammar; the meaning is unchanged.
 The workflow was checked against the Web App's settings (Linux, Node 22) and the first run's
 log. Hugo is responsible for this work as submitted.
 
+## Hugo Maciel Fraga: branch and Azure cleanup, AI handoff docs (Nov 20)
+
+- **Tool:** Claude Code, using the Claude Opus 5.5 model (Anthropic)
+- **Date:** November 20, 2026
+- **Used for:** repository and Azure housekeeping, and the AI handoff documents
+
+### What Claude Code produced
+
+- A status review of every branch and pull request. It deleted the six merged branches and
+  `ksunwar-patch-1` at Hugo's request
+- A comparison of PR #52 and PR #54, a local test and build of PR #54 before Hugo merged it,
+  and the comment explaining why PR #52 was closed
+- A review of `quotelens-rg` that found which resources were unused. At Hugo's request it
+  deleted the empty `QuoteLensModel` app, its plan and storage, the empty
+  `quotelens-cosmodbnosql` account, the old `quotelensrga225` storage, an unused deploy
+  identity, and two stale web app settings
+- `AGENTS.md`, `CLAUDE.md`, `docs/PROJECT_STATUS.md`, `docs/DECISIONS.md` and `docs/HANDOFF.md`
+
+### Prompts
+
+Edited for clarity and grammar; the meaning is unchanged.
+
+1. "What is the status of the QuoteLens branches on GitHub? What is still needed, what is
+   closed, and what should I delete?"
+2. "Delete ksunwar-patch-1."
+3. "Compare web/app-from-prototype and frontend." followed by "Proceed."
+4. "Review our Azure resource group and identify what can be deleted and what is still needed."
+5. "Create an AI handoff system in this repository so teammates can use their own AI coding
+   assistants to understand the project: AGENTS.md, CLAUDE.md, docs/PROJECT_STATUS.md,
+   docs/DECISIONS.md and docs/HANDOFF.md. Use the codebase as the source of truth, separate
+   verified facts from assumptions, do not change application code, and do not commit."
+
+### Checks and responsibility
+
+Every statement in the handoff documents was checked against the code, Git history, GitHub
+issues and the Azure resource group on November 20. API tests (21) and web app tests (9) passed,
+and the site and API responded after the cleanup. Hugo is responsible for this work as submitted.
+
 ## Other team members
 
 Add your own entries here, with the tool and prompts.
