@@ -1,0 +1,24 @@
+.landing { min-height: 100vh; background: var(--slate-50); }
+.l-wrap { max-width: 1200px; margin: 0 auto; }
+.l-header { background: #fff; border-bottom: 1px solid var(--slate-200); }
+.l-brand { text-decoration: none; font-family: var(--serif); font-weight: 800; font-size: 24px; color: var(--navy); letter-spacing: -0.02em; }
+.l-brand:hover { color: var(--navy); }
+.l-mark { width: 36px; height: 36px; border-radius: 10px; background: var(--navy); color: #fff; display: flex; align-items: center; justify-content: center; }
+.l-nav { padding: 12px 14px; font-size: 15px; font-weight: 500; color: var(--slate-700); text-decoration: none; }
+.l-nav.strong-nav { font-weight: 600; color: var(--navy); }
+.l-hero { padding: 72px 24px 64px; display: flex; flex-wrap: wrap; gap: 48px; align-items: center; }
+.l-h1 { font-size: 52px; line-height: 1.08; font-weight: 700; letter-spacing: -0.025em; color: var(--navy); }
+.l-h2 { font-size: 36px; line-height: 1.15; color: var(--navy); letter-spacing: -0.02em; }
+.l-lead { font-size: 19px; line-height: 1.6; color: var(--slate-600); max-width: 560px; }
+.l-example { border-radius: 16px; box-shadow: 0 12px 32px rgba(20, 43, 117, 0.10); overflow: hidden; }
+.l-band { background: #fff; border-top: 1px solid var(--slate-200); border-bottom: 1px solid var(--slate-200); }
+.l-step { padding: 28px; border: 1px solid var(--slate-200); border-radius: 14px; background: var(--slate-50); display: flex; flex-direction: column; gap: 14px; }
+.l-step-icon { width: 44px; height: 44px; border-radius: 12px; background: var(--navy); color: #fff; display: flex; align-items: center; justify-content: center; }
+.l-azure { padding: 16px; border-radius: 12px; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.18); display: flex; flex-direction: column; gap: 4px; }
+.l-azure-status { align-self: flex-start; margin-top: 6px; padding: 2px 8px; border-radius: 999px; background: rgba(255, 255, 255, 0.14); color: #fff; font-size: 12px; font-weight: 600; }
+@media (max-width: 640px) {
+  .l-h1 { font-size: 38px; }
+  .l-h2 { font-size: 28px; }
+  .l-hero { padding: 40px 16px; }
+  .l-wrap > section, .l-wrap { padding-left: 16px; padding-right: 16px; }
+}
