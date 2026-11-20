@@ -57,7 +57,8 @@ bottom with a date. If you change a decision, mark the old entry **Replaced** an
 - **Source:** `api/quotelens/extraction.py`, `api/README.md` "What each teammate needs".
 - **Open:** The hand test on 2026-11-12 showed `prebuilt-invoice` never returns square footage,
   edge or sink counts. A text parser over the OCR content was suggested
-  (`samples/vanity-2025/README.md`). **Not decided.**
+  (`samples/vanity-2025/README.md`). On 2026-11-20 an AI Services resource with GPT
+  deployments was added for extraction (see D19). **Not decided:** which approach #14 ships.
 
 ## D10. In Azure, services sign in with managed identity, not keys
 - **Why:** No secrets in app settings. `COSMOS_KEY` stays unset. The Function App's identity
@@ -118,3 +119,15 @@ bottom with a date. If you change a decision, mark the old entry **Replaced** an
   review and an Actions deploy. Each issue has one assignee and a size.
 - **Status:** Branch protection is not on yet (#27).
 - **Source:** GitHub issues and milestones.
+
+## D19. The AI extraction resource gets its own storage, and the API calls it with managed identity (2026-11-20)
+- **Decision:** `quotelens-rg-resource-4538` (AI Services) is part of the app, not just a test,
+  and it bills to the team's Azure for Students subscription. Its studio project uses a separate
+  storage account, `quotelensstudio`, where its identity has Storage Blob Data Contributor. The
+  API's managed identity has Cognitive Services User on the AI resource.
+- **Why:** The only other storage account, `quotelensapihmf`, holds every user's PDFs and the
+  API's code package. Giving the AI resource write access there would expose both. At runtime
+  the API already holds the PDF bytes in `extract_quote`, so the AI resource needs no access to
+  `quote-files`. Managed identity keeps keys out of app settings (D10).
+- **Tradeoff:** One more storage account (a few cents a month). The GPT deployments bill per call.
+- **Source:** Azure role assignments on `quotelensstudio` and `quotelens-rg-resource-4538`.

@@ -130,6 +130,10 @@ log. Hugo is responsible for this work as submitted.
   `quotelens-cosmodbnosql` account, the old `quotelensrga225` storage, an unused deploy
   identity, and two stale web app settings
 - `AGENTS.md`, `CLAUDE.md`, `docs/PROJECT_STATUS.md`, `docs/DECISIONS.md` and `docs/HANDOFF.md`
+- Diagnosed why the AI studio still asked for Storage Blob Data Contributor (the role had not
+  been saved, and it belongs to the AI resource's identity, not a person). Wrote the commands
+  Hugo ran to create the `quotelensstudio` storage account and grant the two roles, then added
+  them to the handoff documents
 
 ### Prompts
 
@@ -144,6 +148,11 @@ Edited for clarity and grammar; the meaning is unchanged.
    assistants to understand the project: AGENTS.md, CLAUDE.md, docs/PROJECT_STATUS.md,
    docs/DECISIONS.md and docs/HANDOFF.md. Use the codebase as the source of truth, separate
    verified facts from assumptions, do not change application code, and do not commit."
+6. "The selected resource quotelens-rg-resource-4538 requires the Storage Blob Data Contributor
+   role on this storage account to continue. I added the role manually, but the error remains."
+7. "This is a real feature of the application. How can we achieve the same result with the
+   student account? Billing to the student account is fine." followed by "Update the handoff
+   documents."
 
 ### Checks and responsibility
 

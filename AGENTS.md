@@ -50,6 +50,11 @@ Function App "quotelens-api-hmf" (Python 3.12, Linux, Flex Consumption)  ── 
    ├─ Storage "quotelensapihmf": private container quote-files (original PDFs)
    └─ Application Insights "quotelens-api-hmf"
 Document Intelligence "quotelens-docintel" (F0): exists, not called by the code yet
+AI Services "quotelens-rg-resource-4538" (S0, Canada Central): created 2026-11-20 for real
+   extraction (#14). Model deployments: gpt-5.1, gpt-5.4-mini, text-embedding-3-large.
+   The API's managed identity has Cognitive Services User on it. Not called by the code yet
+   └─ Storage "quotelensstudio": files for the AI studio project (the AI resource's identity
+      has Storage Blob Data Contributor). Kept apart from the API's storage on purpose
 ```
 
 All resources are in resource group `quotelens-rg`, region Central US, on an Azure for Students
@@ -136,6 +141,8 @@ The root `README.md` setup section is out of date (it says `npm install` for the
   `x-user-id` is accepted only when `ALLOW_DEV_USER=true`, which must **never** be set in Azure.
 - `COSMOS_KEY` stays unset in Azure. The Function App signs in with its managed identity.
 - PDFs stay in the private `quote-files` container. Links are read-only and last 10 minutes.
+- The AI resource gets no access to `quotelensapihmf`. The API sends it the PDF bytes it
+  already has. Its studio project uses `quotelensstudio`.
 - Limits: 2 to 5 quotes per comparison, PDF only, 20 MB per file.
 - `.github/workflows/main_quotelensapp.yml` and the repository secrets `AZUREAPPSERVICE_*`
   (they sign in to Azure with OIDC through managed identity `oidc-msi-b915`).
@@ -148,5 +155,7 @@ The root `README.md` setup section is out of date (it says `npm install` for the
   has a $20/month budget alert and limited student credit. The subscription's policy only allows
   certain regions (as of 2026-10-31: Central US, North Central US, Canada Central, Norway East,
   Belgium Central). Use Central US.
+- The GPT deployments on the AI resource bill per call. Test with the four sample quotes, not
+  loops or bulk runs.
 - Sample quotes in `samples/` are real and redacted. Do not add unredacted personal data.
 - The repository is **public**.

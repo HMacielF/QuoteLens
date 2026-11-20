@@ -21,7 +21,7 @@ day. Update this file when the status changes, and keep the date current.
 
 | Area | State | Issue |
 |---|---|---|
-| Extraction | **Mocked.** `extract_quote` ignores the PDF and returns one of three sample quotes by upload position (`extractionSource: "mock"`). `quotelens-docintel` exists and was tested by hand on the samples: it finds vendor and total but never square footage | #14 (Adela), #32, #45 |
+| Extraction | **Mocked.** `extract_quote` ignores the PDF and returns one of three sample quotes by upload position (`extractionSource: "mock"`). `quotelens-docintel` exists and was tested by hand on the samples: it finds vendor and total but never square footage. On 2026-11-20 Adela created the AI Services resource `quotelens-rg-resource-4538` with GPT and embedding deployments. Its studio storage (`quotelensstudio`) and the API's permission to call it (Cognitive Services User) are set up. **Unconfirmed:** which Azure AI feature and analyzer it will use, and whether `quotelens-docintel` is still needed | #14 (Adela), #32, #45 |
 | Sign-in (Entra External ID) | API code reads `x-ms-client-principal-id` and is untested in Azure. App Service authentication is not on. Creating the External ID tenant on the student subscription was denied by region policy, so the tenant approach is undecided | #7 (Hugo), #33, #42 |
 | Live mode in the web app | `frontend/src/api/live.js` is written and was tested against a local API. The deployed site was built without `VITE_API_BASE`, so it only runs the demo | #25 (Kristi) |
 | User profiles | The `users` container exists but nothing writes to it | #33 |

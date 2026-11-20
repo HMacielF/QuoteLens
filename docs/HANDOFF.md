@@ -35,7 +35,7 @@ In the web app, every page calls `apiFor(session)` from `frontend/src/api/index.
 
 | You want to | Change | Also change |
 |---|---|---|
-| Real extraction (#14) | Body of `extract_quote` in `api/quotelens/extraction.py`. Return `ExtractedQuote`, and leave unknown fields empty | Set `extractionSource` to something other than `"mock"`. Test with `samples/vanity-2025/`. Add the Document Intelligence endpoint as an app setting and use managed identity where possible |
+| Real extraction (#14) | Body of `extract_quote` in `api/quotelens/extraction.py`. Return `ExtractedQuote`, and leave unknown fields empty | Set `extractionSource` to something other than `"mock"`. Test with `samples/vanity-2025/`. Call `quotelens-rg-resource-4538` with `DefaultAzureCredential` (the API already has Cognitive Services User on it), and add its endpoint and analyzer name as app settings on `quotelens-api-hmf`. Send the PDF bytes; do not give the AI resource access to `quote-files`. Then redeploy the API |
 | A comparison rule or flag | `api/quotelens/comparison.py` | `frontend/src/api/comparison.js`, plus tests on both sides |
 | A limit or status rule | `api/quotelens/service.py` / `models.py` | `frontend/src/api/demo.js` |
 | A new field on a quote | `ExtractedQuote` in `models.py` | `frontend/src/components/QuoteForm.jsx`, `samples.js`, and the Review and Detail pages |
