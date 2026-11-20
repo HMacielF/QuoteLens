@@ -1,47 +1,52 @@
-# QuoteLens frontend - Crislen
+# QuoteLens
 
-Static web UI for QuoteLens, a tool that compares contractor estimates side by side.
-Built with plain HTML, CSS and JavaScript so it runs locally with no install.
+![Deploy](https://github.com/HMacielF/QuoteLens/actions/workflows/<workflow-file>.yml/badge.svg)
 
-## Run it
-Open `index.html` in a browser, or serve the folder:
+QuoteLens is a cloud web app that helps homeowners compare contractor
+estimates side by side. Users upload two or more PDF quotes, the app
+extracts prices, square footage and line items with Azure AI Document
+Intelligence, lets the user review and correct them, then shows total
+price, effective cost per sq ft, measurement differences, and whether
+each service is included, excluded or not specified.
 
-    python -m http.server 5173     # then visit http://localhost:5173
+Prototype scope: countertop installation estimates.
 
-## Screens
-| Route | Screen | What it does |
-|---|---|---|
-| `#/signin` | Sign in | Mock login (final app: Microsoft Entra External ID) |
-| `#/dashboard` | Dashboard | Lists saved comparisons; empty state with sample data button |
-| `#/new` | New comparison | Drag and drop or choose 2+ PDFs, with validation |
-| `#/review` | Review and correct | Edit extracted fields; low-confidence fields highlighted; nothing saved until Confirm |
-| `#/compare/<id>` | Comparison | Total, cost per sq ft, measured-area bars, flag when measurements differ, included / excluded / not specified per service |
+**Live site:** [URL]
 
-## Structure
-    index.html        page shell
-    css/styles.css    design tokens and styles
-    js/api.js         mock backend (one function per Azure Function)
-    js/app.js         router and the five screens
+## Team
+- Hugo Maciel Fraga: team lead, countertop industry review
+- Kristi Sunwar: DevOps and deployment (GitHub Actions)
+- Adela Wallis: data ingestion with Document Intelligence
+- Crislen Flores: frontend
 
-## How it maps to the architecture
-`js/api.js` is the only file that will change when the backend is ready.
-Each function keeps its shape and swaps its body for a `fetch()` to Azure Functions:
-`extractQuote` (ExtractQuote), `saveComparison` (ConfirmQuote + BuildComparison),
-`listComparisons`, `getComparison`. Saved data lives in `localStorage` for now.
+## Architecture
+| Layer | Azure service |
+|---|---|
+| Compute | Azure Functions (API) |
+| Database | Cosmos DB (users, quotes, comparisons) |
+| Object storage | Blob Storage (original PDFs, owner-only access) |
+| UI | Static web frontend (HTML/CSS/JS) |
+| AI / extra service | Azure AI Document Intelligence |
+| Auth | Microsoft Entra External ID (in progress) |
+| Automation | GitHub Actions (deploy), Bicep (`main.bicep`) |
 
-## Mocked for now
-- Extraction returns two fixed sample quotes instead of calling Document Intelligence.
-- Sign-in accepts any email and password.
-- Saved comparisons are stored in the browser, not Cosmos DB.
-- The original-PDF link works only in the session where the file was uploaded.
+Flow: upload PDF → Function saves to Blob → Document Intelligence extracts
+fields → user reviews/corrects → confirmed data saved to Cosmos DB →
+comparison page.
 
-## Accessibility
-Labeled form fields, visible keyboard focus, status text next to every color chip,
-44px minimum touch targets, responsive layout down to phone width.
+## Setup
+1. Clone the repo.
+2. Frontend: `python -m http.server 5173` and open http://localhost:5173
+3. API: `cd api && npm install`, copy `local.settings.example.json` to
+   `local.settings.json`, fill in your own keys, then `func start`.
+4. Infrastructure: `az deployment group create -g <rg> -f main.bicep`
 
-## Next
-Connect `api.js` to the real Functions, add Entra sign-in, add phone-width testing with classmates.
+## Deployment
+Merges to `main` deploy automatically through GitHub Actions.
 
-# Sophie - Data/AI
+## AI usage
+See [AI_DISCLOSURE.md](AI_DISCLOSURE.md).
 
-# Kristi - devops
+## Status
+Done: UI, Blob upload. In progress: Document Intelligence, Cosmos DB,
+Entra sign-in.
