@@ -113,6 +113,38 @@ Edited for clarity and grammar; the meaning is unchanged.
 The workflow was checked against the Web App's settings (Linux, Node 22) and the first run's
 log. Hugo is responsible for this work as submitted.
 
+## Hugo Maciel Fraga: broken workflows and the web app from the prototype (Nov 14)
+
+- **Tool:** Claude Code, using the Claude Opus 5.5 model (Anthropic)
+- **Date:** November 14, 2026 (PR #54 merged November 20)
+- **Used for:** PR #53 (remove two failing workflows) and PR #54 (the React web app in `frontend/`)
+
+### What Claude Code produced
+
+- Found why every push to `main` failed: an unedited Node Function App template and an empty
+  `main_quotelens-api.yml`. PR #53 removed both
+- All of PR #54: the 11 prototype screens built in React with Vite, the demo mode that runs the
+  API's rules in the browser, the live API client, 9 tests and `frontend/README.md`
+- The message to the team about both pull requests
+
+### Prompts
+
+Edited for clarity and grammar; the meaning is unchanged. The prototype link is left out, as
+are side requests about this file.
+
+1. "Look at the actual program and tell me its status. The 'Deploy Node.js project to Azure
+   Function App' workflow is still failing."
+2. "Proceed with the fixes, and build the frontend from our prototype: [prototype link]. I am
+   not sure whether Crislen has done it yet."
+3. "Write a short message for the team chat about the two pull requests, with the people
+   responsible and each pull request number."
+
+### Checks and responsibility
+
+The web app's 9 tests and its production build passed on November 14 and again on November 20,
+before the merge. After the merge, the deploy succeeded and the live site served the new build.
+Crislen was asked to review PR #54. Hugo is responsible for this work as submitted.
+
 ## Hugo Maciel Fraga: branch and Azure cleanup, AI handoff docs (Nov 20)
 
 - **Tool:** Claude Code, using the Claude Opus 5.5 model (Anthropic)
@@ -134,6 +166,10 @@ log. Hugo is responsible for this work as submitted.
   been saved, and it belongs to the AI resource's identity, not a person). Wrote the commands
   Hugo ran to create the `quotelensstudio` storage account and grant the two roles, then added
   them to the handoff documents
+- Restored Adela's synthetic sample estimate from the deleted `Data/AI` branch with an answer-key
+  README (PR #56), replayed Kristi's deletion of the root `local.settings.example.json` on a new
+  branch, closed seven issues that were done or replaced (#8, #9, #12, #18, #22, #23, #47), and
+  wrote the November 14 entry above from that session's log
 
 ### Prompts
 
@@ -153,6 +189,9 @@ Edited for clarity and grammar; the meaning is unchanged.
 7. "This is a real feature of the application. How can we achieve the same result with the
    student account? Billing to the student account is fine." followed by "Update the handoff
    documents."
+8. "Assess whether we can delete the frontend and Data/AI branches or whether we still need them."
+9. "Add the missing AI disclosure entry for PR #54. Redo Kristi's deletion of the root
+   local.settings.example.json on a new branch from main, and close the issues too."
 
 ### Checks and responsibility
 

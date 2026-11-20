@@ -91,7 +91,7 @@ bottom with a date. If you change a decision, mark the old entry **Replaced** an
   Demo mode ports the API rules to JavaScript, so the app can be shown without sign-in or Azure.
   Live mode uses the same interface against the real API.
 - **Tradeoff:** The rules exist twice (Python and JavaScript) and must be kept in step by hand.
-  The earlier plan of plain `index.html` plus `css/` and `js/` files (issues #9, #18) was
+  The earlier plan of plain `index.html` plus `css/` and `js/` files (issues #9, #18, both closed 2026-11-20) was
   never committed in working form. PR #52, which started on it, was closed.
 - **Source:** `frontend/README.md`, `frontend/src/api/`.
 

@@ -63,18 +63,13 @@ These still describe the earlier plan. Do not rely on them until they are update
   Vite). The architecture row says "Static web frontend (HTML/CSS/JS)". Status says "Done: UI,
   Blob upload".
 - `api/README.md`: says "Nothing is deployed to Azure yet" and asks Crislen to edit `js/api.js`.
-- Issues #9 and #18 refer to root `css/` and `js/` files. The React app in `frontend/` replaced
-  that plan. **Unconfirmed** whether the team wants to close or reword them.
-- Issues #8, #22, #23 and #47 ask for reviews of PRs #4, #5, #6 and #24, which are already merged.
 
 ## Branches (2026-11-20)
 
 | Branch | State |
 |---|---|
-| `main` | Current |
-| `web/app-from-prototype` | Merged as PR #54. Can be deleted |
-| `frontend` | PR #52 closed unmerged. A comment on the PR explains how to redo the work in `frontend/src/` |
-| `Data/AI` | Adela's regex test script (`process_quote.py`) and a sample PDF. Never merged, no PR |
+| `main` | The only long-lived branch |
+| `frontend`, `Data/AI`, `web/app-from-prototype`, `docs/ai-handoff` | Deleted on 2026-11-20. PR #52 (`frontend`) was closed unmerged. Adela's synthetic sample PDF from `Data/AI` moved to `samples/synthetic/` (PR #56). Her `process_quote.py` regex idea is recorded in issue #14 |
 
 ## Priorities (from the milestones)
 
